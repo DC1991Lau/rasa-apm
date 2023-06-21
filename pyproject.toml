@@ -147,6 +147,7 @@ randomname = "^0.1.5"
 pluggy = "^1.0.0"
 slack-sdk = "^3.19.2"
 confluent-kafka = ">=1.9.2,<3.0.0"
+elastic-apm = "^6.16.2"
 [[tool.poetry.dependencies.dask]]
 version = "2022.2.0"
 python = "~=3.7.0"

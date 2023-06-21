@@ -597,3 +597,11 @@ def get_bool_env_variable(variable_name: str, default_variable_value: bool) -> b
             f"Available values are `{true_values + false_values}`"
         )
     return value.lower() in true_values
+
+class APM:
+    token: str = os.getenv('ApmToken')
+    url: str = os.getenv('ApmUrl')
+    env: str = os.getenv('ApmEnv')
+    servicename: str = os.getenv('ApmName')
+
+apmsettings = APM()

@@ -24,6 +24,7 @@ from typing import (
     Coroutine,
 )
 
+from elasticapm.contrib.aiohttp import ElasticAPM, make_apm_client
 import aiohttp
 import jsonschema
 from sanic import Sanic, response
@@ -76,6 +77,7 @@ import rasa.nlu.test
 from rasa.nlu.test import CVEvaluationResult
 from rasa.shared.utils.schemas.events import EVENTS_SCHEMA
 from rasa.utils.endpoints import EndpointConfig
+from rasa.utils.common import apmsettings
 
 if TYPE_CHECKING:
     from ssl import SSLContext
@@ -652,6 +654,7 @@ def create_app(
     app.config.RESPONSE_TIMEOUT = response_timeout
     configure_cors(app, cors_origins)
 
+
     # Set up the Sanic-JWT extension
     if jwt_secret and jwt_method:
         # `sanic-jwt` depends on having an available event loop when making the call to
@@ -675,6 +678,16 @@ def create_app(
             algorithm=jwt_method,
             user_id="username",
         )
+
+    # Initialize APM client
+    app['ELASTIC_APM'] = {
+    'SERVICE_NAME': apmsettings.servicename,
+    'SERVER_URL': apmsettings.url,
+    'SECRET_TOKEN': apmsettings.token,
+    'ENVIRONMENT': apmsettings.env,
+    'VERIFY_SERVER_CERT': False,
+}
+    apm = ElasticAPM(app)
 
     app.ctx.agent = agent
     # Initialize shared object of type unsigned int for tracking

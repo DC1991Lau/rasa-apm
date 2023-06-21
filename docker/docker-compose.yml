@@ -2,27 +2,38 @@ version: '3.0'
 
 services:
   rasa:
-    image: rasa/rasa:latest-full
+    image: rasa:localdev
     networks: ['rasa-network']
+    user: root
     ports:
     - "5005:5005"
     volumes:
     - "./rasa-app-data/:/app/"
-    command:
-    - run
+    environment:
+      ApmToken: "#{Cofidis.config.APM.Secret.Token}#"
+      ApmUrl: "#{Cofidis.config.APM.ServerUrl}#"
+      ApmEnv: '#{Cofidis.Config.Ambiente}#'
+      ApmName: '#{BUILD_REPOSITORY_NAME}#'
+    command: >
+      run 
+      --endpoints endpoints.yml 
+      --enable-api 
+      --cors "*" 
+      --debug 
+      -m models
 
-  action_server:
-    image: rasa/rasa-sdk:latest
-    networks: ['rasa-network']
-    ports:
-    - "5055:5055"
-    volumes:
-    - "./rasa-app-data/actions:/app/actions"
+  # action_server:
+  #   image: rasa/rasa-sdk:latest
+  #   networks: ['rasa-network']
+  #   ports:
+  #   - "5055:5055"
+  #   volumes:
+  #   - "./rasa-app-data/actions:/app/actions"
 
-  duckling:
-    image: rasa/duckling:latest
-    networks: ['rasa-network']
-    ports:
-    - "8000:8000"
+  # duckling:
+  #   image: rasa/duckling:latest
+  #   networks: ['rasa-network']
+  #   ports:
+  #   - "8000:8000"
 
 networks: {rasa-network: {}}
